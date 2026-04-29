@@ -1,65 +1,95 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from 'react';
+import { personas, PersonaId } from '@/lib/personas';
+import { ChatInterface } from '@/components/ChatInterface';
+import { GraduationCap } from 'lucide-react';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export default function Home() {
+  const [activePersonaId, setActivePersonaId] = useState<PersonaId>('abhimanyu');
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-zinc-950 text-white p-4 md:p-8 font-sans selection:bg-blue-500/30">
+      <div className="max-w-5xl mx-auto space-y-8">
+        
+        {/* Header */}
+        <header className="flex flex-col md:flex-row items-center justify-between gap-4 pb-8 border-b border-zinc-800">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-600 p-3 rounded-xl shadow-lg shadow-blue-500/20">
+              <GraduationCap size={28} className="text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Scaler AI Mentors</h1>
+              <p className="text-zinc-400 text-sm mt-1">Chat with our industry leaders and accelerate your career.</p>
+            </div>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8">
+          
+          {/* Sidebar / Persona Switcher */}
+          <aside className="space-y-6">
+            <div>
+              <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4 px-1">Select a Mentor</h2>
+              <div className="flex flex-col gap-3">
+                {(Object.keys(personas) as PersonaId[]).map((pId) => {
+                  const persona = personas[pId];
+                  const isActive = pId === activePersonaId;
+                  return (
+                    <button
+                      key={pId}
+                      onClick={() => setActivePersonaId(pId)}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 text-left w-full border",
+                        isActive 
+                          ? "bg-zinc-900 border-blue-500/50 shadow-lg shadow-blue-900/10 ring-1 ring-blue-500/50" 
+                          : "bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/80 hover:border-zinc-700"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-inner transition-colors",
+                        isActive ? "bg-blue-600 text-white" : "bg-zinc-800 text-zinc-400"
+                      )}>
+                        {persona.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-zinc-100 truncate">{persona.name}</div>
+                        <div className="text-xs text-zinc-400 truncate mt-0.5">{persona.role}</div>
+                      </div>
+                      {isActive && (
+                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Current Persona Description */}
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <h3 className="font-semibold text-zinc-200 mb-2 flex items-center gap-2">
+                About {personas[activePersonaId].name}
+              </h3>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                {personas[activePersonaId].description}
+              </p>
+            </div>
+          </aside>
+
+          {/* Chat Area */}
+          <section className="min-w-0">
+            <ChatInterface personaId={activePersonaId} />
+          </section>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
