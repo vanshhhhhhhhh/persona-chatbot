@@ -83,34 +83,36 @@ export function ChatInterface({ personaId }: ChatInterfaceProps) {
     <div className="flex flex-col h-[600px] bg-zinc-950 rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden relative">
       {/* Chat Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {messages.map((message) => (
+        {messages.map((message) => {
+          const role = message.role as string;
+          return (
           <div
             key={message.id}
             className={cn(
               'flex w-full',
-              message.role === 'user' ? 'justify-end' : 'justify-start'
+              role === 'user' ? 'justify-end' : 'justify-start'
             )}
           >
             <div
               className={cn(
                 'flex gap-3 max-w-[85%]',
-                message.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+                role === 'user' ? 'flex-row-reverse' : 'flex-row'
               )}
             >
               <div
                 className={cn(
                   'w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm text-xs font-bold',
-                  message.role === 'user'
+                  role === 'user'
                     ? 'bg-blue-600 text-white'
                     : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
                 )}
               >
-                {message.role === 'user' ? <User size={16} /> : activePersona.avatar}
+                {role === 'user' ? <User size={16} /> : activePersona.avatar}
               </div>
               <div
                 className={cn(
                   'px-4 py-3 rounded-2xl text-[15px] leading-relaxed shadow-sm whitespace-pre-wrap',
-                  message.role === 'user'
+                  role === 'user'
                     ? 'bg-blue-600 text-white rounded-tr-sm'
                     : 'bg-zinc-900 text-zinc-200 border border-zinc-800 rounded-tl-sm'
                 )}
@@ -119,7 +121,8 @@ export function ChatInterface({ personaId }: ChatInterfaceProps) {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
 
         {isLoading && (
           <div className="flex w-full justify-start">
